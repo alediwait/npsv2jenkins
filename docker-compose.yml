@@ -1,0 +1,53 @@
+version: '2.3'
+
+networks:
+  npsv2-net:
+    driver: bridge
+
+services:
+
+  node:
+    build:
+      context: ./frontend
+      args:
+        - NODE_ENV=development
+    command: ../node_modules/.bin/nodemon --inspect=0.0.0.0:9229 ./bin/www
+    ports:
+      - "80:3000"
+    volumes:
+      - ./frontend:/opt/node_app/app:delegated
+      - ./frontend/package.json:/opt/node_app/package.json
+      - ./frontend/package-lock.json:/opt/node_app/package-lock.json
+      - notused:/opt/node_app/app/node_modules
+    environment:
+      - NODE_ENV=development
+    healthcheck:
+      disable: true
+    networks:
+      - npsv2-net
+
+
+  nodeb:
+    build:
+      context: ./backend
+      args:
+        - NODE_ENV=development
+    command: ../node_modules/.bin/nodemon --inspect=0.0.0.0:9229 ./bin/www
+    ports:
+      - "8082:3000"
+    volumes:
+      - ./backend:/opt/node_app/app:delegated
+      - ./backend/package.json:/opt/node_app/package.json
+      - ./backend/package-lock.json:/opt/node_app/package-lock.json
+      - notusedb:/opt/node_app/app/node_modules
+    environment:
+      - NODE_ENV=development
+    healthcheck:
+      disable: true
+    networks:
+      - npsv2-net
+
+
+volumes:
+  notused:
+  notusedb:
